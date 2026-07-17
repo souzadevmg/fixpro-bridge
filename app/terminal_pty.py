@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import fcntl
 import os
 import pty
 import select
@@ -28,6 +29,12 @@ def run(command: str, gateway_url: str, token: str, timeout: int = 120, session:
     if pid == 0:
         try:
             os.setsid()
+            # Make the PTY the controlling terminal so sh enables job
+            # control and interactive programs do not print "can't access tty".
+            try:
+                fcntl.ioctl(slave, termios.TIOCSCTTY, 0)
+            except OSError:
+                pass
             os.dup2(slave, 0)
             os.dup2(slave, 1)
             os.dup2(slave, 2)
