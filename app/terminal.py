@@ -72,7 +72,7 @@ def _command_args(command: str) -> tuple[list[str] | None, int]:
         return preset.command, preset.timeout
     if not get_config().get("allow_remote_terminal", True):
         raise ValueError("O terminal interativo está desativado na configuração do Bridge.")
-    if not command.strip() or len(command) > 4000:
+    if len(command) > 4000:
         raise ValueError("Informe um comando com até 4.000 caracteres.")
     return ["sh", "-lc", command], min(300, int(get_config().get("terminal_timeout", 120)))
 
