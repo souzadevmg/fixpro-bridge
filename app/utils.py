@@ -7,6 +7,7 @@ import ipaddress
 import json
 import os
 import platform
+import re
 import shutil
 import socket
 import subprocess
@@ -150,10 +151,8 @@ def _addresses_from_ip_output(output: str | None) -> list[str]:
     if not output:
         return []
     addresses: list[str] = []
-    for part in output.replace("\n", " ").split():
-        if "/" not in part:
-            continue
-        address = part.split("/", 1)[0]
+    for match in re.finditer(r"\b(?:100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3})(?:/\d{1,2})?\b", output):
+        address = match.group(0).split("/", 1)[0]
         if _is_tailscale_address(address):
             addresses.append(address)
     return addresses
@@ -233,7 +232,7 @@ def system_info() -> dict[str, str | int | float | bool | None]:
         "wifi_ip": wifi_ip(),
         "tailscale_ip": tailscale_ip(),
         "uptime": uptime(),
-        "bridge_version": "2.3",
+    "bridge_version": "2.4",
         "python": platform.python_version(),
         "pid": str(os.getpid()),
     }

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -10,7 +10,7 @@ CONFIG_FILE="config/config.json"
 LOG_FILE="logs/bridge.log"
 
 if [ ! -f "$CONFIG_FILE" ]; then
-    echo "Arquivo $CONFIG_FILE não encontrado. Execute ./install.sh."
+    echo "Arquivo $CONFIG_FILE nÃ£o encontrado. Execute ./install.sh."
     exit 1
 fi
 
@@ -30,12 +30,12 @@ PY
 )
 
 if [ "$TOKEN" = "GERAR_AUTOMATICAMENTE" ] || [ "${#TOKEN}" -lt 8 ]; then
-    echo "Token não inicializado. Execute ./install.sh."
+    echo "Token nÃ£o inicializado. Execute ./install.sh."
     exit 1
 fi
 
 if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-    echo "Fix Pro Bridge já está em execução (PID $(cat "$PID_FILE"))."
+    echo "Fix Pro Bridge jÃ¡ estÃ¡ em execuÃ§Ã£o (PID $(cat "$PID_FILE"))."
     exit 0
 fi
 
@@ -65,4 +65,5 @@ if ! kill -0 "$BRIDGE_PID" 2>/dev/null; then
     exit 1
 fi
 
-echo "Fix Pro Bridge 2.3 iniciado em http://$HOST:$PORT (PID $BRIDGE_PID)."
+echo "Fix Pro Bridge 2.4 iniciado em http://$HOST:$PORT (PID $BRIDGE_PID)."
+

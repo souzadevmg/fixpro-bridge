@@ -1,4 +1,4 @@
-"""Flask application factory."""
+﻿"""Flask application factory."""
 
 from __future__ import annotations
 
@@ -38,10 +38,11 @@ def create_app() -> Flask:
         )
         return jsonify(success=False, message="Erro interno do Bridge."), 500
 
-    logger.info("bridge_started version=2.3")
+    logger.info("bridge_started version=2.4")
     return application
 
 
 @atexit.register
 def log_shutdown() -> None:
     logger.info("bridge_stopped")
+

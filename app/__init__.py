@@ -1,4 +1,4 @@
-"""Fix Pro Bridge Flask application entry point."""
+﻿"""Fix Pro Bridge Flask application entry point."""
 
 from __future__ import annotations
 
@@ -15,5 +15,6 @@ sys.modules.setdefault("markupsafe._native", _markupsafe_native)
 from app.app import create_app  # noqa: E402
 
 
-__version__ = "2.3"
+__version__ = "2.4"
 app = create_app()
+

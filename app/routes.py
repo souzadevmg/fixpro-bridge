@@ -1,4 +1,4 @@
-"""Authenticated HTTP routes."""
+﻿"""Authenticated HTTP routes."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ logger = configure_logging()
 @routes.get("/")
 @require_bearer
 def root():
-    return jsonify(service="Fix Pro Bridge", version="2.3", status="online")
+    return jsonify(service="Fix Pro Bridge", version="2.4", status="online")
 
 
 @routes.get("/health")
@@ -38,7 +38,7 @@ def wake_computer():
             request.remote_addr or "unknown",
             len(errors),
         )
-        return jsonify(success=False, message="JSON inválido.", errors=errors), 400
+        return jsonify(success=False, message="JSON invÃ¡lido.", errors=errors), 400
 
     try:
         send_wake(payload or {})
@@ -120,4 +120,5 @@ def reload_config():
         )
         return jsonify(success=False, message=str(error)), 400
     logger.info("config_reloaded client_ip=%s", request.remote_addr or "unknown")
-    return jsonify(success=True, message="Configuração recarregada.")
+    return jsonify(success=True, message="ConfiguraÃ§Ã£o recarregada.")
+
