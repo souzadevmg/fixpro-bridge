@@ -30,6 +30,34 @@ O token e os logs locais são preservados. O arquivo `config/config.json` nunca 
 - terminal remoto com saída transmitida por webhook;
 - logs rotativos e diagnóstico integrado.
 
+## Terminal remoto e webhook
+
+O painel envia `POST /api/terminal/run` com um comando, uma `callback_url` HTTPS
+e um `callback_token` descartável. O Bridge responde `202` imediatamente e
+executa o comando em segundo plano. Cada bloco de saída é devolvido ao painel:
+
+```json
+{
+  "event": "chunk",
+  "channel": "stdout",
+  "content": "saída da linha\n"
+}
+```
+
+Ao terminar, o Bridge envia:
+
+```json
+{
+  "event": "finish",
+  "exit_code": 0,
+  "message": "Comando concluído."
+}
+```
+
+Os callbacks usam `Authorization: Bearer TOKEN_DA_SESSÃO` e o token expira
+junto com a sessão. O painel atualiza a tela continuamente por 500 ms, sem
+depender de buffering do Nginx.
+
 ## Configuração
 
 ```json
