@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO_URL="${FIXPRO_BRIDGE_REPO:-https://github.com/DaniloDSMM/fixpro-bridge.git}"
+REPO_URL="${FIXPRO_BRIDGE_REPO:-https://github.com/souzadevmg/fixpro-bridge.git}"
 TARGET="${FIXPRO_BRIDGE_DIR:-$HOME/FixProBridge}"
 if ! command -v git >/dev/null 2>&1; then pkg update -y; pkg install -y git; fi
 if [ -d "$TARGET/.git" ]; then

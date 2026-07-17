@@ -1,5 +1,24 @@
 # Fix Pro Bridge 2.0
 
+RepositÃ³rio oficial: <https://github.com/souzadevmg/fixpro-bridge>
+
+### InstalaÃ§Ã£o online (Termux)
+
+```bash
+pkg update -y && pkg install -y curl git
+curl -fsSL https://raw.githubusercontent.com/souzadevmg/fixpro-bridge/main/install-online.sh | bash
+```
+
+AtualizaÃ§Ã£o sem perder token ou logs:
+
+```bash
+cd ~/FixProBridge
+./update.sh
+./restart.sh
+```
+
+O repositÃ³rio contÃ©m apenas cÃ³digo. Nunca publique `config/config.json`: o token Ã© local e deve permanecer fora do Git.
+
 Bridge Wake on LAN leve para Android 13, executado no Termux com Python 3.14.6, Flask e Waitress. Ele recebe comandos autenticados do Fix Pro Remote e envia o Magic Packet para a rede local do Moto G52.
 
 Não existe interface gráfica, APK, banco de dados, FastAPI, Pydantic, Uvicorn, Rust ou Maturin.
@@ -36,7 +55,7 @@ Depois que o projeto estiver publicado no GitHub, no Termux será necessário ap
 
 ```bash
 pkg update -y && pkg install -y curl
-curl -fsSL https://raw.githubusercontent.com/DaniloDSMM/fixpro-bridge/main/install-online.sh | bash
+curl -fsSL https://raw.githubusercontent.com/souzadevmg/fixpro-bridge/main/install-online.sh | bash
 ```
 
 O script clona ou atualiza o Bridge em `~/FixProBridge`, preserva o token e a configuração
