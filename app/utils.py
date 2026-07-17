@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import ipaddress
 import json
 import os
 import platform
@@ -138,17 +139,38 @@ def storage_info() -> dict[str, float | None]:
         return {"storage_total_gb": None, "storage_free_gb": None, "storage_used_percent": None}
 
 
+def _is_tailscale_address(value: str) -> bool:
+    try:
+        return ipaddress.ip_address(value) in ipaddress.ip_network("100.64.0.0/10")
+    except ValueError:
+        return False
+
+
+def _addresses_from_ip_output(output: str | None) -> list[str]:
+    if not output:
+        return []
+    addresses: list[str] = []
+    for part in output.replace("\n", " ").split():
+        if "/" not in part:
+            continue
+        address = part.split("/", 1)[0]
+        if _is_tailscale_address(address):
+            addresses.append(address)
+    return addresses
+
+
 def tailscale_ip() -> str | None:
     value = command_output(["tailscale", "ip", "-4"])
     if value:
-        return value.splitlines()[0]
-
-    output = command_output(["ip", "-4", "addr", "show", "tailscale0"])
-    if output:
-        for part in output.split():
-            address = part.split("/", 1)[0]
-            if address.startswith("100."):
+        for line in value.splitlines():
+            address = line.strip()
+            if _is_tailscale_address(address):
                 return address
+
+    for command in (["ip", "-4", "addr", "show", "tailscale0"], ["ip", "-4", "addr", "show"]):
+        addresses = _addresses_from_ip_output(command_output(command))
+        if addresses:
+            return addresses[0]
     return None
 
 
@@ -211,7 +233,7 @@ def system_info() -> dict[str, str | int | float | bool | None]:
         "wifi_ip": wifi_ip(),
         "tailscale_ip": tailscale_ip(),
         "uptime": uptime(),
-        "bridge_version": "2.1",
+        "bridge_version": "2.2",
         "python": platform.python_version(),
         "pid": str(os.getpid()),
     }
