@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
-echo "[Fix Pro Bridge 2.0] Atualizando o Termux..."
+echo "[Fix Pro Bridge 2.2] Atualizando o Termux..."
 pkg update -y
 pkg install -y python
 
@@ -18,7 +18,7 @@ if sys.version_info[:2] != (3, 14) or current < (3, 14, 6):
         f"Python incompatível: {sys.version.split()[0]}. "
         "É necessário Python 3.14.6 ou uma revisão 3.14 mais nova."
     )
-print(f"[Fix Pro Bridge 2.0] Python {sys.version.split()[0]} compatível.")
+print(f"[Fix Pro Bridge 2.2] Python {sys.version.split()[0]} compatível.")
 PY
 
 python -m pip --version >/dev/null
@@ -36,7 +36,7 @@ if [ ! -f config/config.json ]; then
 JSON
 fi
 
-echo "[Fix Pro Bridge 2.0] Instalando somente wheels Python universais..."
+echo "[Fix Pro Bridge 2.2] Instalando somente wheels Python universais..."
 python -m pip install \
     --only-binary=:all: \
     --no-deps \
@@ -68,7 +68,7 @@ available = {rule.rule for rule in app.url_map.iter_rules()}
 missing = required - available
 if missing:
     raise SystemExit(f"Endpoints ausentes: {sorted(missing)}")
-print("[Fix Pro Bridge 2.0] Importação e endpoints verificados.")
+print("[Fix Pro Bridge 2.2] Importação e endpoints verificados.")
 PY
 
 if find app -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.pyd' \) | grep -q .; then
@@ -77,11 +77,11 @@ if find app -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.pyd' \) | gre
 fi
 
 echo
-echo "[Fix Pro Bridge 2.0] Instalação concluída sem Rust, Maturin ou compilação nativa."
+echo "[Fix Pro Bridge 2.2] Instalação concluída sem Rust, Maturin ou compilação nativa."
 if [ -n "$GENERATED_TOKEN" ]; then
-    echo "[Fix Pro Bridge 2.0] Token gerado — copie para o painel:"
+    echo "[Fix Pro Bridge 2.2] Token gerado — copie para o painel:"
     echo "$GENERATED_TOKEN"
 else
-    echo "[Fix Pro Bridge 2.0] Token existente preservado."
+    echo "[Fix Pro Bridge 2.2] Token existente preservado."
 fi
-echo "[Fix Pro Bridge 2.0] Inicie com: ./start.sh"
+echo "[Fix Pro Bridge 2.2] Inicie com: ./start.sh"

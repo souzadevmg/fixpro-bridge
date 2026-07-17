@@ -38,7 +38,7 @@ def create_app() -> Flask:
         )
         return jsonify(success=False, message="Erro interno do Bridge."), 500
 
-    logger.info("bridge_started version=2.1")
+    logger.info("bridge_started version=2.2")
     return application
 
 

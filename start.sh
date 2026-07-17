@@ -65,4 +65,4 @@ if ! kill -0 "$BRIDGE_PID" 2>/dev/null; then
     exit 1
 fi
 
-echo "Fix Pro Bridge 2.0 iniciado em http://$HOST:$PORT (PID $BRIDGE_PID)."
+echo "Fix Pro Bridge 2.2 iniciado em http://$HOST:$PORT (PID $BRIDGE_PID)."

@@ -17,7 +17,7 @@ logger = configure_logging()
 @routes.get("/")
 @require_bearer
 def root():
-    return jsonify(service="Fix Pro Bridge", version="2.1", status="online")
+    return jsonify(service="Fix Pro Bridge", version="2.2", status="online")
 
 
 @routes.get("/health")
