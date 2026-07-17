@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, request
 
 from app.config import ConfigurationError, config_manager
 from app.security import require_bearer
-from app.terminal import command_catalog, diagnostics, start_terminal_stream
+from app.terminal import command_catalog, diagnostics, start_interactive_terminal, start_terminal_stream
 from app.utils import configure_logging, health_data, last_log_lines, system_info
 from app.wake import WakeError, send_wake, validate_wake_payload
 
@@ -82,8 +82,14 @@ def bridge_terminal():
     command = str(data.get("command") or "").strip()
     callback_url = str(data.get("callback_url") or "").strip()
     callback_token = str(data.get("callback_token") or "").strip()
+    gateway_url = str(data.get("gateway_url") or "").strip()
+    gateway_token = str(data.get("gateway_token") or "").strip()
+    gateway_session = str(data.get("gateway_session") or "").strip()
     try:
-        start_terminal_stream(command, callback_url, callback_token)
+        if gateway_url and gateway_token:
+            start_interactive_terminal(command, gateway_url, gateway_token, int(data.get("timeout") or 120), gateway_session)
+        else:
+            start_terminal_stream(command, callback_url, callback_token)
     except ValueError as error:
         return jsonify(success=False, message=str(error), commands=command_catalog()), 400
     logger.info(

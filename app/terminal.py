@@ -125,3 +125,20 @@ def start_terminal_stream(command: str, callback_url: str, callback_token: str) 
         raise ValueError("Token de callback inválido.")
     _command_args(command)
     threading.Thread(target=_run, args=(command, callback_url, callback_token), name="FixProTerminal", daemon=True).start()
+
+
+def start_interactive_terminal(command: str, gateway_url: str, gateway_token: str, timeout: int | None = None, gateway_session: str = "") -> None:
+    """Start a PTY session paired with the panel WebSocket gateway."""
+    if not get_config().get("allow_remote_terminal", True):
+        raise ValueError("O terminal interativo está desativado na configuração do Bridge.")
+    if not gateway_url or not gateway_token:
+        raise ValueError("Gateway ou token da sessão ausente.")
+    if not command.strip() or len(command) > 4000:
+        raise ValueError("Informe um comando com até 4.000 caracteres.")
+    from app.terminal_pty import run
+    threading.Thread(
+        target=run,
+        args=(command, gateway_url, gateway_token, timeout or int(get_config().get("terminal_timeout", 120)), gateway_session),
+        name="FixProTerminalPTY",
+        daemon=True,
+    ).start()
