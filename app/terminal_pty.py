@@ -76,7 +76,11 @@ def run(command: str, gateway_url: str, token: str, timeout: int = 120, session:
                 data = json.loads(raw.decode("utf-8", "replace"))
                 kind = data.get("type")
                 if kind == "input":
-                    os.write(master, str(data.get("data", "")).encode("utf-8"))
+                    value = str(data.get("data", ""))
+                    if value == "\x03":
+                        _interrupt(master)
+                    else:
+                        os.write(master, value.encode("utf-8"))
                 elif kind == "resize":
                     _resize(master, int(data.get("cols", 120)), int(data.get("rows", 32)))
                 elif kind == "close":
@@ -137,6 +141,19 @@ def _terminate(pid: int) -> None:
             os.kill(pid, signal.SIGTERM)
         except OSError:
             pass
+
+
+def _interrupt(master: int) -> None:
+    """Send SIGINT to the foreground process group without killing the shell."""
+    try:
+        os.killpg(os.tcgetpgrp(master), signal.SIGINT)
+        return
+    except (OSError, AttributeError):
+        pass
+    try:
+        os.write(master, b"\x03")
+    except OSError:
+        pass
 
 
 def _send_error(ws: WebSocketClient, message: str) -> None:
