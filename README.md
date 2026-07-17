@@ -1,4 +1,4 @@
-﻿# Fix Pro Bridge 2.4
+# Fix Pro Bridge 2.4
 
 RepositÃ³rio oficial: <https://github.com/souzadevmg/fixpro-bridge>
 
