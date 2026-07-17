@@ -16,6 +16,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "token": "GERAR_AUTOMATICAMENTE",
     "log": True,
     "timeout": 10,
+    "allow_remote_terminal": True,
+    "terminal_timeout": 120,
 }
 
 
@@ -29,7 +31,7 @@ def validate_config(data: object) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ConfigurationError("config.json must contain a JSON object")
 
-    required = set(DEFAULT_CONFIG)
+    required = {"host", "port", "token", "log", "timeout"}
     missing = sorted(required.difference(data))
     if missing:
         raise ConfigurationError(f"missing configuration fields: {', '.join(missing)}")
@@ -39,6 +41,8 @@ def validate_config(data: object) -> dict[str, Any]:
     token = data.get("token")
     enabled_log = data.get("log")
     timeout = data.get("timeout")
+    allow_remote_terminal = data.get("allow_remote_terminal", True)
+    terminal_timeout = data.get("terminal_timeout", 120)
 
     if not isinstance(host, str) or not host.strip():
         raise ConfigurationError("host must be a non-empty string")
@@ -50,6 +54,10 @@ def validate_config(data: object) -> dict[str, Any]:
         raise ConfigurationError("log must be a boolean")
     if isinstance(timeout, bool) or not isinstance(timeout, int) or not 1 <= timeout <= 120:
         raise ConfigurationError("timeout must be an integer between 1 and 120")
+    if not isinstance(allow_remote_terminal, bool):
+        raise ConfigurationError("allow_remote_terminal must be a boolean")
+    if isinstance(terminal_timeout, bool) or not isinstance(terminal_timeout, int) or not 5 <= terminal_timeout <= 300:
+        raise ConfigurationError("terminal_timeout must be an integer between 5 and 300")
 
     return {
         "host": host.strip(),
@@ -57,6 +65,8 @@ def validate_config(data: object) -> dict[str, Any]:
         "token": token.strip(),
         "log": enabled_log,
         "timeout": timeout,
+        "allow_remote_terminal": allow_remote_terminal,
+        "terminal_timeout": terminal_timeout,
     }
 
 

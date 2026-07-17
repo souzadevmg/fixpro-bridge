@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, request
 
 from app.config import ConfigurationError, config_manager
 from app.security import require_bearer
-from app.terminal import command_catalog, diagnostics, run_bridge_command
+from app.terminal import command_catalog, diagnostics, start_terminal_stream
 from app.utils import configure_logging, health_data, last_log_lines, system_info
 from app.wake import WakeError, send_wake, validate_wake_payload
 
@@ -18,7 +18,7 @@ logger = configure_logging()
 @routes.get("/")
 @require_bearer
 def root():
-    return jsonify(service="Fix Pro Bridge", version="2.4", status="online")
+    return jsonify(service="Fix Pro Bridge", version="2.5.0", status="online")
 
 
 @routes.get("/health")
@@ -79,18 +79,20 @@ def bridge_diagnostics():
 @require_bearer
 def bridge_terminal():
     data = request.get_json(silent=True) or {}
-    command = str(data.get("command") or "").strip().lower()
+    command = str(data.get("command") or "").strip()
+    callback_url = str(data.get("callback_url") or "").strip()
+    callback_token = str(data.get("callback_token") or "").strip()
     try:
-        result = run_bridge_command(command)
+        start_terminal_stream(command, callback_url, callback_token)
     except ValueError as error:
         return jsonify(success=False, message=str(error), commands=command_catalog()), 400
     logger.info(
         "terminal_command client_ip=%s command=%s exit_code=%s",
         request.remote_addr or "unknown",
         command,
-        result["exit_code"],
+        "streaming",
     )
-    return jsonify(success=True, result=result)
+    return jsonify(success=True, message="Sessão de terminal iniciada.", streaming=True), 202
 
 
 @routes.post("/api/test")
@@ -121,4 +123,3 @@ def reload_config():
         return jsonify(success=False, message=str(error)), 400
     logger.info("config_reloaded client_ip=%s", request.remote_addr or "unknown")
     return jsonify(success=True, message="Configuração recarregada.")
-

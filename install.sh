@@ -5,24 +5,19 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
-echo "[Fix Pro Bridge 2.4] Atualizando o Termux..."
+echo "[Fix Pro Bridge 2.5.0] Atualizando o Termux..."
 pkg update -y
 pkg install -y python iproute2 termux-api
 
 python - <<'PY'
 import sys
-
 current = sys.version_info[:3]
 if sys.version_info[:2] != (3, 14) or current < (3, 14, 6):
-    raise SystemExit(
-        f"Python incompatÃ­vel: {sys.version.split()[0]}. "
-        "Ã‰ necessÃ¡rio Python 3.14.6 ou uma revisÃ£o 3.14 mais nova."
-    )
-print(f"[Fix Pro Bridge 2.4] Python {sys.version.split()[0]} compatÃ­vel.")
+    raise SystemExit(f"Python incompatível: {sys.version.split()[0]}. É necessário Python 3.14.6 ou uma revisão 3.14 mais nova.")
+print(f"[Fix Pro Bridge 2.5.0] Python {sys.version.split()[0]} compatível.")
 PY
 
 python -m pip --version >/dev/null
-
 mkdir -p config logs
 if [ ! -f config/config.json ]; then
     cat > config/config.json <<'JSON'
@@ -31,22 +26,20 @@ if [ ! -f config/config.json ]; then
   "port": 8080,
   "token": "GERAR_AUTOMATICAMENTE",
   "log": true,
-  "timeout": 10
+  "timeout": 10,
+  "allow_remote_terminal": true,
+  "terminal_timeout": 120
 }
 JSON
 fi
 
-echo "[Fix Pro Bridge 2.4] Instalando somente wheels Python universais..."
-python -m pip install \
-    --only-binary=:all: \
-    --no-deps \
-    --requirement requirements.txt
+echo "[Fix Pro Bridge 2.5.0] Instalando dependências Python universais..."
+python -m pip install --only-binary=:all: --no-deps --requirement requirements.txt
 
 GENERATED_TOKEN="$(python - <<'PY'
 import json
 import secrets
 from pathlib import Path
-
 path = Path("config/config.json")
 data = json.loads(path.read_text(encoding="utf-8"))
 if data.get("token") == "GERAR_AUTOMATICAMENTE":
@@ -58,31 +51,29 @@ PY
 
 touch logs/bridge.log
 chmod 600 config/config.json
-chmod 700 start.sh stop.sh restart.sh
+chmod 700 start.sh stop.sh restart.sh update.sh
 
 PYTHONPATH="$ROOT_DIR" python - <<'PY'
 from app import app
-
 required = {"/", "/health", "/api/wake", "/api/info", "/api/diagnostics", "/api/terminal/run", "/api/test", "/api/logs", "/api/reload"}
 available = {rule.rule for rule in app.url_map.iter_rules()}
 missing = required - available
 if missing:
     raise SystemExit(f"Endpoints ausentes: {sorted(missing)}")
-print("[Fix Pro Bridge 2.4] ImportaÃ§Ã£o e endpoints verificados.")
+print("[Fix Pro Bridge 2.5.0] Importação e endpoints verificados.")
 PY
 
 if find app -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.pyd' \) | grep -q .; then
-    echo "DependÃªncia nativa encontrada dentro do projeto. InstalaÃ§Ã£o cancelada."
+    echo "Dependência nativa encontrada dentro do projeto. Instalação cancelada."
     exit 1
 fi
 
 echo
-echo "[Fix Pro Bridge 2.4] InstalaÃ§Ã£o concluÃ­da sem Rust, Maturin ou compilaÃ§Ã£o nativa."
+echo "[Fix Pro Bridge 2.5.0] Instalação concluída."
 if [ -n "$GENERATED_TOKEN" ]; then
-    echo "[Fix Pro Bridge 2.4] Token gerado â€” copie para o painel:"
+    echo "[Fix Pro Bridge 2.5.0] Token gerado — copie para o painel:"
     echo "$GENERATED_TOKEN"
 else
-    echo "[Fix Pro Bridge 2.4] Token existente preservado."
+    echo "[Fix Pro Bridge 2.5.0] Token existente preservado."
 fi
-echo "[Fix Pro Bridge 2.4] Inicie com: ./start.sh"
-
+echo "[Fix Pro Bridge 2.5.0] Inicie com: ./start.sh"
