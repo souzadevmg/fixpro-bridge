@@ -1,11 +1,11 @@
-# Fix Pro Bridge 2.2
+# Fix Pro Bridge 2.3
 
 Repositório oficial: <https://github.com/souzadevmg/fixpro-bridge>
 
 ### Instalação online (Termux)
 
 ```bash
-pkg update -y && pkg install -y curl git
+pkg update -y && pkg install -y curl git iproute2 termux-api
 curl -fsSL https://raw.githubusercontent.com/souzadevmg/fixpro-bridge/main/install-online.sh | bash
 ```
 
@@ -29,7 +29,7 @@ Não existe interface gráfica, APK, banco de dados, FastAPI, Pydantic, Uvicorn,
 Fix Pro Remote (VPS)
         │ HTTP sobre Tailscale + Bearer Token
         ▼
-Fix Pro Bridge 2.2 (Android / Termux)
+Fix Pro Bridge 2.3 (Android / Termux)
         │ Magic Packet UDP
         ▼
 Computador na rede local
@@ -54,7 +54,7 @@ O instalador não realiza downgrade, não usa pyenv e rejeita versões anteriore
 Depois que o projeto estiver publicado no GitHub, no Termux será necessário apenas:
 
 ```bash
-pkg update -y && pkg install -y curl
+pkg update -y && pkg install -y curl git iproute2 termux-api
 curl -fsSL https://raw.githubusercontent.com/souzadevmg/fixpro-bridge/main/install-online.sh | bash
 ```
 
@@ -78,7 +78,7 @@ chmod +x install.sh
 
 O `install.sh`:
 
-1. instala somente o pacote `python` do Termux;
+1. instala os pacotes `python`, `iproute2` e `termux-api` do Termux;
 2. confirma Python 3.14.6 ou uma revisão 3.14 mais recente;
 3. cria `config/config.json` caso esteja ausente;
 4. instala somente wheels universais com `--only-binary=:all:`;
@@ -193,7 +193,7 @@ curl http://100.x.x.x:8080/ -H "Authorization: Bearer TOKEN"
 ```json
 {
   "service": "Fix Pro Bridge",
-  "version": "2.2",
+  "version": "2.3",
   "status": "online"
 }
 ```

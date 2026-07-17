@@ -233,7 +233,7 @@ def system_info() -> dict[str, str | int | float | bool | None]:
         "wifi_ip": wifi_ip(),
         "tailscale_ip": tailscale_ip(),
         "uptime": uptime(),
-        "bridge_version": "2.2",
+        "bridge_version": "2.3",
         "python": platform.python_version(),
         "pid": str(os.getpid()),
     }

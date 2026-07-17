@@ -2,7 +2,8 @@
 set -euo pipefail
 REPO_URL="${FIXPRO_BRIDGE_REPO:-https://github.com/souzadevmg/fixpro-bridge.git}"
 TARGET="${FIXPRO_BRIDGE_DIR:-$HOME/FixProBridge}"
-if ! command -v git >/dev/null 2>&1; then pkg update -y; pkg install -y git; fi
+pkg update -y
+pkg install -y git curl iproute2 termux-api
 if [ -d "$TARGET/.git" ]; then
   git -C "$TARGET" fetch --depth=1 origin
   git -C "$TARGET" reset --hard origin/HEAD 2>/dev/null || git -C "$TARGET" reset --hard origin/main

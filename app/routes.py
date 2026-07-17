@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request
 
 from app.config import ConfigurationError, config_manager
 from app.security import require_bearer
+from app.terminal import command_catalog, diagnostics, run_bridge_command
 from app.utils import configure_logging, health_data, last_log_lines, system_info
 from app.wake import WakeError, send_wake, validate_wake_payload
 
@@ -17,7 +18,7 @@ logger = configure_logging()
 @routes.get("/")
 @require_bearer
 def root():
-    return jsonify(service="Fix Pro Bridge", version="2.2", status="online")
+    return jsonify(service="Fix Pro Bridge", version="2.3", status="online")
 
 
 @routes.get("/health")
@@ -66,6 +67,30 @@ def wake_computer():
 @require_bearer
 def info():
     return jsonify(system_info())
+
+
+@routes.get("/api/diagnostics")
+@require_bearer
+def bridge_diagnostics():
+    return jsonify(success=True, **diagnostics())
+
+
+@routes.post("/api/terminal/run")
+@require_bearer
+def bridge_terminal():
+    data = request.get_json(silent=True) or {}
+    command = str(data.get("command") or "").strip().lower()
+    try:
+        result = run_bridge_command(command)
+    except ValueError as error:
+        return jsonify(success=False, message=str(error), commands=command_catalog()), 400
+    logger.info(
+        "terminal_command client_ip=%s command=%s exit_code=%s",
+        request.remote_addr or "unknown",
+        command,
+        result["exit_code"],
+    )
+    return jsonify(success=True, result=result)
 
 
 @routes.post("/api/test")

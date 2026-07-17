@@ -15,5 +15,5 @@ sys.modules.setdefault("markupsafe._native", _markupsafe_native)
 from app.app import create_app  # noqa: E402
 
 
-__version__ = "2.2"
+__version__ = "2.3"
 app = create_app()
