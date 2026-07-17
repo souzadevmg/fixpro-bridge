@@ -19,7 +19,7 @@ cd ~/FixProBridge
 
 O repositório contém apenas código. Nunca publique `config/config.json`: o token é local e deve permanecer fora do Git.
 
-Bridge Wake on LAN leve para Android 13, executado no Termux com Python 3.14.6, Flask e Waitress. Ele recebe comandos autenticados do Fix Pro Remote e envia o Magic Packet para a rede local do Moto G52.
+Bridge Wake on LAN leve para Android, executado no Termux com Python, Flask e Waitress. Ele recebe comandos autenticados do Fix Pro Remote e envia o Magic Packet para a rede local do dispositivo Android. O Moto G52 foi o aparelho usado na validação inicial, mas não é obrigatório.
 
 Não existe interface gráfica, APK, banco de dados, FastAPI, Pydantic, Uvicorn, Rust ou Maturin.
 
@@ -29,7 +29,7 @@ Não existe interface gráfica, APK, banco de dados, FastAPI, Pydantic, Uvicorn,
 Fix Pro Remote (VPS)
         │ HTTP sobre Tailscale + Bearer Token
         ▼
-Fix Pro Bridge 2.0 (Moto G52 / Termux)
+Fix Pro Bridge 2.0 (Android / Termux)
         │ Magic Packet UDP
         ▼
 Computador na rede local
@@ -39,10 +39,10 @@ O Agente Windows não é necessário para Wake on LAN.
 
 ## Requisitos
 
-- Moto G52 com Android 13 ou superior;
+- celular ou tablet Android compatível com Termux;
 - Termux atualizado, instalado pelo F-Droid ou release oficial;
 - Python 3.14.6 fornecido pelo Termux;
-- Tailscale no Moto G52 e na VPS;
+- Tailscale no dispositivo Android e na VPS;
 - Wi‑Fi conectado à rede do computador que será ligado.
 
 O instalador não realiza downgrade, não usa pyenv e rejeita versões anteriores à 3.14.6 ou fora da série 3.14.
@@ -159,7 +159,7 @@ No Android, desative a otimização de bateria para Termux e Tailscale. `start.s
 
 ## Tailscale e cadastro no painel
 
-Consulte o IP `100.x.x.x` do Moto G52 no aplicativo Tailscale. A VPS deve pertencer à mesma tailnet.
+Consulte o IP `100.x.x.x` do dispositivo Android no aplicativo Tailscale. A VPS deve pertencer à mesma tailnet.
 
 No Fix Pro Remote, cadastre:
 
@@ -317,7 +317,7 @@ Sem o header de autenticação, todos devem responder HTTP 401.
 ### O painel mostra o Bridge offline
 
 - confirme `./start.sh` e consulte `logs/bridge.log`;
-- verifique se Moto G52 e VPS estão na mesma tailnet;
+- verifique se o dispositivo Android e a VPS estão na mesma tailnet;
 - teste `/health` a partir da VPS usando o token;
 - confira IP Tailscale, porta e token;
 - confirme que o Android não suspendeu Termux ou Tailscale.
