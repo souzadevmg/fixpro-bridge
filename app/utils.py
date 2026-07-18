@@ -158,6 +158,23 @@ def _addresses_from_ip_output(output: str | None) -> list[str]:
     return addresses
 
 
+def _addresses_from_ifconfig(output: str | None) -> list[str]:
+    """Extract IPv4 addresses from ifconfig when Android blocks netlink.
+
+    Some Android builds allow ``ifconfig`` to read interface addresses while
+    denying the netlink socket used by ``ip addr`` to unprivileged Termux
+    processes. This is common with the Tailscale ``tun0`` interface.
+    """
+    if not output:
+        return []
+    addresses: list[str] = []
+    for match in re.finditer(r"\binet(?:\s+addr:)?\s+([0-9]{1,3}(?:\.[0-9]{1,3}){3})", output):
+        address = match.group(1)
+        if _is_tailscale_address(address):
+            addresses.append(address)
+    return addresses
+
+
 def tailscale_ip() -> str | None:
     value = command_output(["tailscale", "ip", "-4"])
     if value:
@@ -168,6 +185,14 @@ def tailscale_ip() -> str | None:
 
     for command in (["ip", "-4", "addr", "show", "tailscale0"], ["ip", "-4", "addr", "show"]):
         addresses = _addresses_from_ip_output(command_output(command))
+        if addresses:
+            return addresses[0]
+
+    # Android may reject iproute2's netlink request with EPERM even though
+    # ifconfig can still read the address. Try the Tailscale interface first,
+    # then all interfaces as a fallback for Android's tun0 naming.
+    for command in (["ifconfig", "tun0"], ["ifconfig"]):
+        addresses = _addresses_from_ifconfig(command_output(command))
         if addresses:
             return addresses[0]
     return None

@@ -74,15 +74,63 @@ depender de buffering do Nginx.
 
 Desative `allow_remote_terminal` se o aparelho não for administrado exclusivamente por você.
 
-## Tailscale
+## Componentes Android obrigatórios
 
-O Tailscale continua recomendado. Cadastre no painel `http://IP_TAILSCALE:8080`, mantenha a porta 8080 fora da internet pública e coloque o Android e a VPS na mesma tailnet.
+- **Termux**: ambiente que executa o Bridge;
+- **Termux:API**: fornece bateria, energia, Wi-Fi e outros dados do aparelho;
+- **Termux:Boot**: inicia o Bridge automaticamente depois de reiniciar o Android;
+- **Tailscale**: cria o caminho privado entre a VPS e a rede local.
+
+Instale Termux, Termux:API e Termux:Boot pela mesma origem (F-Droid ou GitHub).
+Depois de instalar o Termux:Boot, abra o aplicativo uma vez. O script em
+`~/.termux/boot/fixpro-bridge.sh` será executado automaticamente nos próximos
+boots. A documentação oficial do Termux:Boot exige essa primeira abertura e
+scripts executáveis nessa pasta.
+
+Crie o inicializador automático:
+
+```bash
+mkdir -p ~/.termux/boot
+cat > ~/.termux/boot/fixpro-bridge.sh <<'EOF'
+#!/data/data/com.termux/files/usr/bin/bash
+termux-wake-lock
+sleep 15
+cd "$HOME/FixProBridge"
+bash start.sh >> logs/boot.log 2>&1
+EOF
+chmod +x ~/.termux/boot/fixpro-bridge.sh
+```
+
+No Android, deixe Termux, Termux:API, Termux:Boot e Tailscale com bateria
+**Sem restrições** e permita execução em segundo plano.
+
+## Tailscale e VPN sempre ativa
+
+Abra o Tailscale, autorize o dispositivo e ative a VPN. No Android, habilite:
+
+`Configurações → Rede/VPN → Tailscale → VPN sempre ativa`
+
+Cadastre no painel `http://IP_TAILSCALE:8080`, mantenha a porta 8080 fora da
+internet pública e coloque o Android e a VPS na mesma tailnet. O Tailscale é
+independente do Termux:Boot: ambos precisam estar habilitados para o Bridge
+voltar online após um reboot.
+
+Se o campo IP Tailscale ficar vazio, diagnostique pelo Termux:
+
+```bash
+ip -4 addr show tun0
+python -c "from app.utils import tailscale_ip; print(tailscale_ip())"
+```
+
+Algumas versões do Android bloqueiam a consulta netlink usada por `ip`; o
+Bridge tenta automaticamente o fallback `ifconfig` nesses aparelhos.
 
 ## Operação contínua
 
-- instale Termux e Termux:API pela mesma origem;
-- remova a otimização de bateria do Termux, Termux:API e Tailscale;
 - mantenha o Wi-Fi conectado à rede dos computadores;
-- use `./restart.sh` depois de atualizar.
+- confirme que o Tailscale voltou conectado após reiniciar;
+- use `bash ./restart.sh` depois de atualizar, caso os scripts percam a
+  permissão de execução;
+- consulte `logs/boot.log` quando o Bridge não iniciar no boot.
 
 Mantido por **souzadevmg** para o produto **Fix Pro Remote**.
