@@ -7,7 +7,7 @@ Repositório: <https://github.com/souzadevmg/fixpro-bridge>
 ## Instalação online
 
 ```bash
-pkg update -y && pkg install -y curl git iproute2 termux-api
+pkg update -y && pkg install -y curl git iproute2 net-tools termux-api
 curl -fsSL https://raw.githubusercontent.com/souzadevmg/fixpro-bridge/main/install-online.sh | bash
 ```
 

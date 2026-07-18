@@ -7,7 +7,7 @@ cd "$ROOT_DIR"
 
 echo "[Fix Pro Bridge 2.5.0] Atualizando o Termux..."
 pkg update -y
-pkg install -y python iproute2 termux-api
+pkg install -y python iproute2 net-tools termux-api
 
 python - <<'PY'
 import sys
